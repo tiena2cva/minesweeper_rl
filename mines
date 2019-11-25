@@ -1,0 +1,23 @@
+#!python
+
+import argparse
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Use RL to solve minesweeper.\nMore info: https://github.com/tiena2cva/minesweeper_rl')
+    parser.register("type", "bool", lambda v: v.lower() == "true")
+
+    parser.add_argument("-r", "--height", type=int,
+                        default=16, help="number of row")
+    parser.add_argument("-l", "--width", type=int,
+                        default=16, help="number of columm")
+    parser.add_argument("-m", "--mine", type=int,
+                        default=40, help="number of bomb in the map")
+
+    parser.add_argument("--train", help="train model", action="store_true")
+    parser.add_argument("-i", "--in_model", type=str, default="",
+                        help="path to pre-trained model")
+    parser.add_argument("-o", "--out_model", type=str, default="model/out.model",
+                        help="path to save trained model")
+
+    args = parser.parse_args()

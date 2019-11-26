@@ -15,7 +15,7 @@ class MinesGame(object):
         return self.env.step((row, col))
 
     def render_done(self, won, reward):
-        pass
+        raise NotImplementedError
 
     def play(self):
         done = False
@@ -24,14 +24,13 @@ class MinesGame(object):
             self.render()
             inp = self.get_input()
 
-            if inp is str and inp.lower() == 'exit':
+            if type(inp) == str and inp.lower() == 'exit':
                 break
 
             row, col = inp
-            assert row is int and col is int
 
-            _, r, done, won = self.step(row, col)
+            _, r, done, info = self.step(row, col)
             reward += r
 
             if done:
-                self.render_done(won, reward)
+                self.render_done(info['won'], reward)

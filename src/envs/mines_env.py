@@ -61,7 +61,7 @@ class MinesEnv(Env):
             [self.rows, self.cols], MinesEnv.UNKNOWN)
 
         self.step(self.start_pos)
-        return self.observation_space
+        return np.copy(self.observation_space)
 
     def step(self, coord):
         """Run one timestep of the environment's dynamics. When end of
@@ -82,24 +82,34 @@ class MinesEnv(Env):
 
         reward = 0
         done = False
+        won = False
         if self.observation_space[coord] != MinesEnv.UNKNOWN:
             # Clicked on an opened cell
             reward = -2
         elif self.map[coord] == MinesEnv.MINE:
             # Clicked on a mine!
             self.observation_space[coord] = MinesEnv.MINE
-            reward = -99
+            reward = -99        # you lose
             done = True
         else:
+            # Check if it clicks on a random cell with unknown neighbors
+            reward = -1
+            for n in self.__neighbors[coord]:
+                if self.observation_space[n] != MinesEnv.UNKNOWN:
+                    reward = 0
+                    break
+
             count = self.__open_cell(coord)
             self.coords_to_clear -= count
             if self.coords_to_clear <= 0:
-                reward = 100     # Yay you won.
+                reward = 100     # you won.
                 done = True
+                won = True
             else:
-                reward = count
+                if reward != -1:
+                    reward = count
 
-        return (self.observation_space, reward, done, None)
+        return (np.copy(self.observation_space), reward, done, {'won': won})
 
     def render(self, mode='human'):
         """Renders the environment.

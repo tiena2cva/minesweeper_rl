@@ -29,7 +29,10 @@ class MinesEnv(Env):
 
     # OpenAI gym API
     def reset(self):
-        """ Reset all attributes to init state
+        """Resets the state of the environment and returns an initial observation.
+
+        Returns:
+            observation (object): the initial observation.
         """
         self.map = np.full([self.rows, self.cols], MinesEnv.UNKNOWN)
         self.coords_to_clear = self.rows * self.cols - self.mines
@@ -61,9 +64,26 @@ class MinesEnv(Env):
         return self.observation_space
 
     def step(self, coord):
+        """Run one timestep of the environment's dynamics. When end of
+        episode is reached, you are responsible for calling `reset()`
+        to reset this environment's state.
+
+        Accepts an action and returns a tuple (observation, reward, done, info).
+
+        Args:
+            action (object): an action provided by the agent
+
+        Returns:
+            observation (object): agent's observation of the current environment
+            reward (float) : amount of reward returned after previous action
+            done (bool): whether the episode has ended, in which case further step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+        """
+
         reward = 0
         done = False
         if self.observation_space[coord] != MinesEnv.UNKNOWN:
+            # Clicked on an opened cell
             reward = -2
         elif self.map[coord] == MinesEnv.MINE:
             # Clicked on a mine!
@@ -78,9 +98,12 @@ class MinesEnv(Env):
                 done = True
             else:
                 reward = count
+
         return (self.observation_space, reward, done, None)
 
     def render(self, mode='human'):
+        """Renders the environment.
+        """
         pass
 
     # Private function

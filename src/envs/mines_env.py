@@ -29,7 +29,10 @@ class MinesEnv(Env):
 
     # OpenAI gym API
     def reset(self):
+        """ Reset all attributes to init state
+        """
         self.map = np.full([self.rows, self.cols], MinesEnv.UNKNOWN)
+        self.coords_to_clear = self.rows * self.cols - self.mines
 
         # Gen random mine in the map
         no_mines = self.mines
@@ -53,6 +56,8 @@ class MinesEnv(Env):
 
         self.observation_space = np.full(
             [self.rows, self.cols], MinesEnv.UNKNOWN)
+
+        self.step(self.start_pos)
         return self.observation_space
 
     def step(self, coord):
@@ -69,7 +74,7 @@ class MinesEnv(Env):
             count = self.__open_cell(coord)
             self.coords_to_clear -= count
             if self.coords_to_clear <= 0:
-                reward = 50     # Yay you won.
+                reward = 100     # Yay you won.
                 done = True
             else:
                 reward = count
@@ -81,9 +86,8 @@ class MinesEnv(Env):
     # Private function
     def __init_game(self):
         self.__compute_neighbors()
-        self.reset()
 
-        self.step(self.start_pos)
+        self.reset()
 
     def __count_mines(self, row, col):
         """ Count amount of mines adjacent to a cell.
@@ -102,18 +106,19 @@ class MinesEnv(Env):
             for col in range(self.cols):
                 self.__neighbors[row][col] = self.__find_neighbors(row, col)
 
-    def __find_neighbors(self, rowin, colin):
-        """ Takes col, row and grid as input and returns as list of neighbors
+    def __find_neighbors(self, row, col):
+        """ Returns list of neighbors of this cell
         """
+        if not ((-1 < row < self.rows) and (-1 < col < self.cols)):
+            return []
+
         neighbors = []
-        for col in range(colin-1, colin+2):
-            for row in range(rowin-1, rowin+2):
-                if (-1 < rowin < self.rows and
-                    -1 < colin < self.cols and
-                    (rowin != row or colin != col) and
-                    (0 <= col < self.cols) and
-                        (0 <= row < self.rows)):
-                    neighbors.append((row, col))
+        for c in range(col - 1, col + 2):
+            for r in range(row - 1, row + 2):
+                if ((row != r or col != c) and
+                    (0 <= c < self.cols) and
+                        (0 <= r < self.rows)):
+                    neighbors.append((r, c))
 
         return neighbors
 
@@ -139,16 +144,16 @@ def __test_action_space(env):
     assert action[1] >= 0 and action[1] < env.cols
 
 
-def __test_init_env(env):
+def __test_map(env):
+
+    knew = 0
     for col in range(env.cols):
         for row in range(env.rows):
             if env.map[row][col] != MinesEnv.MINE:
                 mines = 0
                 for c in range(col-1, col+2):
                     for r in range(row-1, row+2):
-                        if (-1 < r < env.rows and
-                            -1 < c < env.cols and
-                            (r != row or c != col) and
+                        if ((r != row or c != col) and
                             (0 <= c < env.cols) and
                             (0 <= r < env.rows) and
                                 env.map[r][c] == MinesEnv.MINE):
@@ -157,15 +162,20 @@ def __test_init_env(env):
 
             if env.observation_space[row][col] != MinesEnv.UNKNOWN:
                 assert env.map[row][col] == env.observation_space[row][col]
+                if env.observation_space[row][col] != MinesEnv.MINE:
+                    knew += 1
+
+    # Test coords_to_clear
+    assert env.coords_to_clear == env.rows * env.cols - knew - env.mines
 
 
 def __test_env(env):
     __test_action_space(env)
-    __test_init_env(env)
+    __test_map(env)
 
     action = env.action_space.sample()
     env.step(action)
-    __test_init_env(env)
+    __test_map(env)
 
 
 if __name__ == "__main__":

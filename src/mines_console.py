@@ -2,8 +2,8 @@ from mines_core import MinesGame
 
 
 class MinesConsole(MinesGame):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, row=16, col=16, mine=40):
+        super().__init__(row, col, mine)
 
     def render(self):
         map = self.env.observation_space
@@ -47,5 +47,5 @@ class MinesConsole(MinesGame):
 
 
 if __name__ == "__main__":
-    game = MinesConsole()
+    game = MinesConsole(8, 8, 3)
     game.play()

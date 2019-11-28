@@ -1,4 +1,4 @@
-from mines_core import MinesGame
+from minesrl.game import *
 
 
 class MinesConsole(MinesGame):

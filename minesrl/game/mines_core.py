@@ -1,4 +1,4 @@
-from envs.mines_env import MinesEnv
+from minesrl.envs import *
 
 
 class MinesGame(object):

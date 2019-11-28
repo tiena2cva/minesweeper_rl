@@ -1,23 +1,55 @@
-#!python
+#!/usr/bin/env python
 
 import argparse
+from minesrl import *
+
+
+def parse_extra(parser, namespace):
+    namespaces = []
+    extra = namespace.extra
+    while extra:
+        n = parser.parse_args(extra)
+        extra = n.extra
+        namespaces.append(n)
+
+    return namespaces
+
+
+def play_game(args):
+    if args.mode == 'console':
+        game = MinesConsole(args.row, args.col, args.mine)
+        game.play()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Use RL to solve minesweeper.\nMore info: https://github.com/tiena2cva/minesweeper_rl')
-    parser.register("type", "bool", lambda v: v.lower() == "true")
 
-    parser.add_argument("-r", "--height", type=int,
-                        default=16, help="number of row")
-    parser.add_argument("-l", "--width", type=int,
-                        default=16, help="number of columm")
-    parser.add_argument("-m", "--mine", type=int,
-                        default=40, help="number of bomb in the map")
+    subparsers = parser.add_subparsers(
+        help='sub-command', dest='subparser_name')
 
-    parser.add_argument("--train", help="train model", action="store_true")
-    parser.add_argument("-i", "--in_model", type=str, default="",
-                        help="path to pre-trained model")
-    parser.add_argument("-o", "--out_model", type=str, default="model/out.model",
-                        help="path to save trained model")
+    # Sub-command for play game
+    parser_play = subparsers.add_parser('play', help="Play the game")
+    parser_play.add_argument('--mode',
+                             default='console',
+                             const='console',
+                             nargs='?',
+                             choices=['console'],
+                             help='choose game mode (default: %(default)s)')
+    parser_play.add_argument("-r", "--row", type=int,
+                             default=16, help="number of row (default: %(default)s)")
+    parser_play.add_argument("-c", "--col", type=int,
+                             default=16, help="number of columm (default: %(default)s)")
+    parser_play.add_argument("-m", "--mine", type=int,
+                             default=40, help="number of bomb in the map (default: %(default)s)")
+    parser_play.set_defaults(func=play_game)
+
+    # Sub-command for training model
+    parser_train = subparsers.add_parser('train', help="Training model")
+
+    # Sub-command for run pre-trained model
+    parser_run = subparsers.add_parser('run', help="Run pre-trained model")
 
     args = parser.parse_args()
+
+    args.func(args)

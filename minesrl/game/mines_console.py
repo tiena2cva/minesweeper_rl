@@ -44,8 +44,3 @@ class MinesConsole(MinesGame):
             print('You won!!! With reward = ' + str(reward))
         else:
             print('You lose!!! But get reward = ' + str(reward))
-
-
-if __name__ == "__main__":
-    game = MinesConsole(8, 8, 3)
-    game.play()

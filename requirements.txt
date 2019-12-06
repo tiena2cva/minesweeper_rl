@@ -1,3 +1,5 @@
 gym
 numpy
 keras
+matplotlib
+pytest

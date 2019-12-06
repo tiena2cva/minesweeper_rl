@@ -59,7 +59,7 @@ def evaluate_agent(agent, epoch=10000, plot=True):
         color = 'tab:red'
         ax1.set_xlabel('epochs')
         ax1.set_ylabel('prob %', color=color)
-        ax1.plot(win_prob, color=color, label='Win prob')
+        line_win = ax1.plot(win_prob, color=color, label='Win prob')
         ax1.tick_params(axis='y', labelcolor=color)
 
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
@@ -67,9 +67,12 @@ def evaluate_agent(agent, epoch=10000, plot=True):
         color = 'tab:blue'
         # we already handled the x-label with ax1
         ax2.set_ylabel('points', color=color)
-        ax2.plot(reward_mean, color=color, label='Reward mean')
+        line_reward = ax2.plot(reward_mean, color=color, label='Reward mean')
         ax2.tick_params(axis='y', labelcolor=color)
 
+        lns = line_win + line_reward
+        labs = [l.get_label() for l in lns]
+        ax1.legend(lns, labs, loc=0)
+
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
-        plt.legend()
         plt.show()

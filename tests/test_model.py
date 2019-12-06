@@ -3,7 +3,7 @@ from minesrl.envs import MinesEnv
 
 
 def test_baseline():
-    env = MinesEnv(8, 8, 1)
+    env = MinesEnv(16, 1, 1)
     agent = BaseAgent(env)
 
-    evaluate_agent(agent)
+    evaluate_agent(agent, epoch=100)

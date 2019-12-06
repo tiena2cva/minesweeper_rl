@@ -2,17 +2,17 @@ from minesrl.envs import *
 
 
 class MinesGame(object):
-    def __init__(self, row=16, col=16, mine=40):
-        self.env = MinesEnv(row=row, col=col, mine=mine)
+    def __init__(self, env):
+        self.env = env
 
     def render(self):
-        raise NotImplementedError
-
-    def get_input(self):
-        raise NotImplementedError
+        self.env.render()
 
     def step(self, row, col):
         return self.env.step((row, col))
+
+    def get_input(self):
+        raise NotImplementedError
 
     def render_done(self, won, reward):
         raise NotImplementedError

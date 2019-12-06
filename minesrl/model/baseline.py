@@ -1,20 +1,17 @@
-from keras.models import load_model
-
-
-class BaseModel(object):
-    def __init__(self):
+class BaseAgent(object):
+    def __init__(self, env):
         super().__init__()
 
-        self.create_model()
+        self.env = env
 
-    def save_model(self, path):
-        self.model.save(path)
+    def save(self, path):
+        raise NotImplementedError
 
-    def load_model(self, path):
-        self.model = load_model(path)
-
-    def create_model(self):
+    def load(self, path):
         raise NotImplementedError
 
     def train(self):
         raise NotImplementedError
+
+    def play(self):
+        self.env.reset()

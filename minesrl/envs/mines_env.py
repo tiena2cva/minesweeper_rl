@@ -16,16 +16,20 @@ class MinesEnv(Env):
         self.map = np.full((self.rows, self.cols), MinesEnv.UNKNOWN)
         self.__neighbors = np.zeros((self.rows, self.cols), dtype=object)
         self.start_pos = (self.rows // 2, self.cols // 2)
+        self.obs = np.full(
+            [self.rows, self.cols], MinesEnv.UNKNOWN)
 
         # OpenAI gym param
         self.action_space = spaces.Tuple(
             (spaces.Discrete(row), spaces.Discrete(col)))
-        self.observation_space = np.full(
-            [self.rows, self.cols], MinesEnv.UNKNOWN)
-
+        self.observation_space = spaces.Box(
+            low=MinesEnv.MINE, high=8, shape=(self.rows, self.cols))
         self.seed()
 
         self.__init_game()
+
+    def get_obs(self):
+        return np.copy(self.obs)
 
     # OpenAI gym API
     def reset(self):
@@ -57,11 +61,11 @@ class MinesEnv(Env):
                     else:
                         self.map[row][col] = 0
 
-        self.observation_space = np.full(
+        self.obs = np.full(
             [self.rows, self.cols], MinesEnv.UNKNOWN)
 
-        self.step(self.start_pos)
-        return np.copy(self.observation_space)
+        # self.step(self.start_pos)
+        return self.get_obs()
 
     def step(self, coord):
         """Run one timestep of the environment's dynamics. When end of
@@ -83,19 +87,19 @@ class MinesEnv(Env):
         reward = 0
         done = False
         won = False
-        if self.observation_space[coord] != MinesEnv.UNKNOWN:
+        if self.obs[coord] != MinesEnv.UNKNOWN:
             # Clicked on an opened cell
             reward = -2
         elif self.map[coord] == MinesEnv.MINE:
             # Clicked on a mine!
-            self.observation_space[coord] = MinesEnv.MINE
+            self.obs[coord] = MinesEnv.MINE
             reward = -99        # you lose
             done = True
         else:
             # Check if it clicks on a random cell with unknown neighbors
             reward = -1
             for n in self.__neighbors[coord]:
-                if self.observation_space[n] != MinesEnv.UNKNOWN:
+                if self.obs[n] != MinesEnv.UNKNOWN:
                     reward = 0
                     break
 
@@ -109,7 +113,7 @@ class MinesEnv(Env):
                 if reward != -1:
                     reward = count
 
-        return (np.copy(self.observation_space), reward, done, {'won': won})
+        return (self.get_obs(), reward, done, {'won': won})
 
     def render(self, mode='human'):
         """Renders the environment.
@@ -158,10 +162,10 @@ class MinesEnv(Env):
     def __open_cell(self, coord):
         if self.map[coord] == MinesEnv.MINE:
             return 0
-        if self.observation_space[coord] != MinesEnv.UNKNOWN:
+        if self.obs[coord] != MinesEnv.UNKNOWN:
             return 0
 
-        self.observation_space[coord] = self.map[coord]
+        self.obs[coord] = self.map[coord]
         count = 1
         if self.map[coord] == 0:
             for n in self.__neighbors[coord]:

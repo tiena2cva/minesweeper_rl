@@ -7,6 +7,28 @@ class MinesConsole(MinesGame):
         env = MinesConsoleEnv(row, col, mine)
         super().__init__(env)
 
+    def render(self):
+        map = self.env.get_obs()
+        print('   |', end='')
+        for c in range(self.env.cols):
+            print('{0:2d}'.format(c % 10), end='')
+        print(' ')
+        for c in range(self.env.cols + 2):
+            print('--', end='')
+        print(' ')
+        for r in range(self.env.rows):
+            print('{0:3d}| '.format(r), end='')
+            for c in range(self.env.cols):
+                if map[r][c] == self.env.UNKNOWN:
+                    print('.', end=' ')
+                elif map[r][c] == self.env.MINE:
+                    print('💣', end=' ')
+                elif map[r][c] == 0:
+                    print(' ', end=' ')
+                else:
+                    print(map[r][c], end=' ')
+            print()
+
     def get_input(self):
         inp = input('Action: ')
         try:

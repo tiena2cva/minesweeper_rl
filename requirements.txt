@@ -1,5 +1,6 @@
 gym
 numpy
+tensorflow==1.14
 keras
 matplotlib
 pytest

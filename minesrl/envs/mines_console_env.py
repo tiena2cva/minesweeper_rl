@@ -3,7 +3,7 @@ from minesrl.envs import MinesEnv
 
 class MinesConsoleEnv(MinesEnv):
     def render(self):
-        map = self.observation_space
+        map = self.get_obs()
         print('   |', end='')
         for c in range(self.cols):
             print('{0:2d}'.format(c % 10), end='')

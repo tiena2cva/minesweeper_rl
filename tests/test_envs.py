@@ -26,9 +26,9 @@ def __test_map(env):
                             mines += 1
                 assert env.map[row][col] == mines
 
-            if env.observation_space[row][col] != MinesEnv.UNKNOWN:
-                assert env.map[row][col] == env.observation_space[row][col]
-                if env.observation_space[row][col] != MinesEnv.MINE:
+            if env.obs[row][col] != MinesEnv.UNKNOWN:
+                assert env.map[row][col] == env.obs[row][col]
+                if env.obs[row][col] != MinesEnv.MINE:
                     knew += 1
 
     # Test coords_to_clear

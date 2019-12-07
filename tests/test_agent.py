@@ -7,11 +7,3 @@ def test_baseline():
     agent = BaseAgent(env)
 
     evaluate_agent(agent, epoch=100)
-
-
-def test_PPOagent():
-    env = MinesEnv(8, 8, 8)
-    agent = PPOAgent(env)
-    agent.train()
-
-    evaluate_agent(agent, epoch=100)

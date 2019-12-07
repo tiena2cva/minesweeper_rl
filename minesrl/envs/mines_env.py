@@ -20,8 +20,8 @@ class MinesEnv(Env):
             [self.rows, self.cols], MinesEnv.UNKNOWN)
 
         # OpenAI gym param
-        self.action_space = spaces.Tuple(
-            (spaces.Discrete(row), spaces.Discrete(col)))
+        self.action_space = spaces.MultiDiscrete(
+            [self.rows, self.cols])
         self.observation_space = spaces.Box(
             low=MinesEnv.MINE, high=8, shape=(self.rows, self.cols))
         self.seed()
@@ -67,7 +67,7 @@ class MinesEnv(Env):
         # self.step(self.start_pos)
         return self.get_obs()
 
-    def step(self, coord):
+    def step(self, action):
         """Run one timestep of the environment's dynamics. When end of
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
@@ -87,6 +87,7 @@ class MinesEnv(Env):
         reward = 0
         done = False
         won = False
+        coord = tuple(action)
         if self.obs[coord] != MinesEnv.UNKNOWN:
             # Clicked on an opened cell
             reward = -2

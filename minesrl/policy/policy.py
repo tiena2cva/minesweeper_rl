@@ -24,3 +24,10 @@ class EpsGreedPolicy(Policy):
             action = np.argmax(q_values)
 
         return action
+
+
+class GreedyQPolicy(Policy):
+    def get_action(self, q_values):
+        assert q_values.ndim == 1
+        action = np.argmax(q_values)
+        return action

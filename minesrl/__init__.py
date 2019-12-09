@@ -1,2 +1,4 @@
 from .envs import *
 from .game import *
+from .agent import *
+from .policy import *

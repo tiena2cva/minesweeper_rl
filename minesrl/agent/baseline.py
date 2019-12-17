@@ -62,7 +62,8 @@ def evaluate_agent(agent, epoch=10000, plot=True):
         line_win = ax1.plot(win_prob, color=color, label='Win prob')
         ax1.tick_params(axis='y', labelcolor=color)
 
-        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        # instantiate a second axes that shares the same x-axis
+        ax2 = ax1.twinx()
 
         color = 'tab:blue'
         # we already handled the x-label with ax1

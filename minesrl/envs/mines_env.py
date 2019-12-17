@@ -33,7 +33,8 @@ class MinesEnv(Env):
 
     # OpenAI gym API
     def reset(self):
-        """Resets the state of the environment and returns an initial observation.
+        """Resets the state of the environment and returns an initial
+        observation.
 
         Returns:
             observation (object): the initial observation.
@@ -72,16 +73,20 @@ class MinesEnv(Env):
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
 
-        Accepts an action and returns a tuple (observation, reward, done, info).
+        Accepts an action and returns a tuple (observation, reward, done,
+        info).
 
         Args:
             action (object): an action provided by the agent
 
         Returns:
-            observation (object): agent's observation of the current environment
+            observation (object): agent's observation of the current
+                environment
             reward (float) : amount of reward returned after previous action
-            done (bool): whether the episode has ended, in which case further step() calls will return undefined results
-            info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+            done (bool): whether the episode has ended, in which case further
+                step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for
+                debugging, and sometimes learning)
         """
 
         reward = 0

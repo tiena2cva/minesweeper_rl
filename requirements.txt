@@ -5,3 +5,4 @@ keras
 matplotlib
 pytest
 stable-baselines
+keras-rl

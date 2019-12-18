@@ -18,12 +18,13 @@ class MinesEnv(Env):
         self.start_pos = (self.rows // 2, self.cols // 2)
         self.obs = np.full(
             [self.rows, self.cols], MinesEnv.UNKNOWN)
+        self.reward = 0
 
         # OpenAI gym param
         self.action_space = spaces.MultiDiscrete(
             [self.rows, self.cols])
         self.observation_space = spaces.Box(
-            low=MinesEnv.MINE, high=8, shape=(self.rows, self.cols))
+            low=MinesEnv.UNKNOWN, high=8, shape=(self.rows, self.cols))
         self.seed()
 
         self.__init_game()
@@ -40,6 +41,7 @@ class MinesEnv(Env):
         """
         self.map = np.full([self.rows, self.cols], MinesEnv.UNKNOWN)
         self.coords_to_clear = self.rows * self.cols - self.mines
+        self.reward = 0
 
         # Gen random mine in the map
         no_mines = self.mines
@@ -107,14 +109,21 @@ class MinesEnv(Env):
             count = self.__open_cell(coord)
             self.coords_to_clear -= count
             if self.coords_to_clear <= 0:
-                reward = 100     # you won.
+                print("Win")
+                reward = 500     # you won.
                 done = True
                 won = True
             else:
                 if reward != -1:
                     reward = count
 
-        return (self.get_obs(), reward, done, {'won': won})
+        self.reward += reward
+
+        if self.reward < -100:
+            self.reward = -200
+            done = True
+            won = False
+        return (self.get_obs(), self.reward, done, {'won': won})
 
     def render(self, mode='human'):
         """Renders the environment.
@@ -172,3 +181,33 @@ class MinesEnv(Env):
             for n in self.__neighbors[coord]:
                 count += self.__open_cell(n)
         return count
+
+
+class MinesEnvWrapper(Env):
+    def __init__(self, row=16, col=16, mine=20):
+        self.env = MinesEnv(row=row, col=col, mine=mine)
+        self.action_space = spaces.Discrete(row * col)
+        self.observation_space = self.env.observation_space
+
+    def get_obs(self):
+        return self.env.get_obs()
+
+    def reset(self):
+        return self.env.reset()
+
+    def step(self, action):
+        act = self._unwrap_action(action)
+        return self.env.step(act)
+
+    def render(self, mode='human'):
+        return self.env.render(mode=mode)
+
+    def _wrap_action(self, act):
+        act = tuple(act)
+        return act[0] * self.env.cols + act[1]
+
+    def _unwrap_action(self, action):
+        row = action // self.env.cols
+        col = action % self.env.cols
+
+        return (row, col)

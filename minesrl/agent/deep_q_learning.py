@@ -2,7 +2,7 @@ from minesrl.agent import BaseAgent
 
 
 class QLearningAgent(BaseAgent):
-    def __init__(self, env, policy):
+    def __init__(self, env, model, policy):
         super().__init__(env)
         self.policy = policy
 

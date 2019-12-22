@@ -1,1 +1,1 @@
-from .policy import EpsGreedPolicy, Policy
+from .policy import EpsGreedPolicy, Policy, GreedyQPolicy

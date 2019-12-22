@@ -17,20 +17,20 @@ class BaseAgent(object):
     def train(self):
         pass
 
-    def get_action(self):
+    def get_action(self, state):
         act = self.env.action_space.sample()
         return act
 
     def play(self):
-        self.env.reset()
+        state = self.env.reset()
 
         done = False
         reward = 0
         while not done:
 
-            action = self.get_action()
+            action = self.get_action(state)
 
-            _, r, done, info = self.env.step(action)
+            state, r, done, info = self.env.step(action)
             reward += r
 
         return reward, info
